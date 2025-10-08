@@ -3,6 +3,7 @@ import numpy as np
 import RPi.GPIO as GPIO
 import time
 
+# 馬達腳位設定（樹莓派實體腳位編號 BOARD）
 Motor_R1_Pin = 16
 Motor_R2_Pin = 18
 Motor_L1_Pin = 11
@@ -16,6 +17,7 @@ GPIO.setup(Motor_R2_Pin, GPIO.OUT, initial=GPIO.LOW)
 GPIO.setup(Motor_L1_Pin, GPIO.OUT, initial=GPIO.LOW)
 GPIO.setup(Motor_L2_Pin, GPIO.OUT, initial=GPIO.LOW)
 
+# 初始化四個 PWM 控制器（頻率 500Hz）
 pwm_r1 = GPIO.PWM(Motor_R1_Pin, 500)
 pwm_r2 = GPIO.PWM(Motor_R2_Pin, 500)
 pwm_l1 = GPIO.PWM(Motor_L1_Pin, 500)
@@ -98,6 +100,7 @@ try:
         ret, image = webcam.read()
         gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         blur_gray = cv2.GaussianBlur(gray,(3, 3), 0)
+        # 邊緣偵測
         canny = cv2.Canny(blur_gray, 50, 50)
         cv2.imshow("canny", canny)
         # cv2.waitKey(0)
@@ -105,6 +108,7 @@ try:
         indices = np.where(canny != [0])
         coordinates = zip(indices[1], indices[0])
         coordinates = (tuple(coordinates))
+        # 計算所有邊緣點的 X 平均值
         sum = 0
         for point in coordinates:
             image = cv2.circle(
@@ -139,3 +143,4 @@ finally:
     GPIO.cleanup()
     webcam.release()
     cv2.destroyAllWindows()
+
